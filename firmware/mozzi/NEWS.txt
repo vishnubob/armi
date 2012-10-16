@@ -1,0 +1,133 @@
+Mozzi sound synthesis library for Arduino
+
+NEWS
+
+
+Version 0.01.1m
+
+- Removed EventDelay.cpp, EventDelay() is all in the .h file so all inline now.
+
+
+Version 0.01.1l
+
+- fixed randSeed() and xorshift96Seed();
+- Sample()
+	- added looping parameters
+	- changed the internals of next - slower at 4us but more flexible
+	- now wave tables can be arbitrary lengths, no more power-of-2 restriction
+	- added example _11b_Sample_Loop_Points
+- Phasor is now set to output only unsigned longs.  Fixed bad bugs.
+- Add example _19_PWM_Phasing, demonstrating Phasor() as an audio generator.
+
+
+Version 0.01.1k
+
+- Tested and working on Leonardo board.
+
+
+Version 0.01.1j
+
+- Fixed Phasor and docs.
+
+
+Version 0.01.1i
+
+- newer version of TimerOne library from http://www.pjrc.com.  Teensy2++ works,
+	Arduino Mega and others should also be OK, noting audio out pin differences in README Quick Start section.
+- added option for dithering oscillator phase, which can reduce spurious frequencies.  Add it like this:
+	#define DITHER_OSCIL_PHASE
+	#include <oscil.h>
+- added Phasor.h, a high resolution repeating ramp generator, much better for some synth calculations
+	than using an 8-bit saw wave oscil.
+- lots of typos, etc.
+
+
+Version 0.01.1h
+
+- more Leonardo/Teensy compatibilty fixes, thanks to massi on mozzi users list.
+
+
+Version 0.01.1g
+
+- changed control interrupts to Timer0 to test compatibility on atmega32u4 - (Leonardo/Teensy).
+	Timer0 is used by Arduino IDE, but Mozzi clobbered it already,
+	has EventDelay() to replace delay(), and this now leaves Timer2
+	(Timer4 on atmega32u4) free.
+- replaced: prog_char with: const char __attribute__((progmem))
+	to test compatibility with atmega32u4 (Leonardo/Teeny).
+	Changed tables and python scripts to match.
+- added example _12c_Samples_Tables_Arrays, showing a way to use
+	Samples and sound tables in arrays, and using a small number of Sample players
+	to play many sound tables.
+
+
+Version 0.01.1f
+
+- added WaveShaper(), a table-based waveshaping object suited for audio synthesis,
+	with an example sketch,  _18_WaveShaper.
+- added tables for use with WaveShaper(), including Chebyshev polynomial curves and sigmoid curves.
+- utils.h: added rand(), a fast ranged random number generator using xorshift96(),
+	for signed and unsigned chars and ints, in rand(min,max) for values
+	between min and max-1, and rand(max) for 0 to max-1.
+	Much easier to use than xorshift() on its own.
+- added a folder of bamboo percussion sample tables - is it possible
+	to get clean sounding samples at 8-bit 16384Hz resolution?
+	Looking at old Amiga sample archives for hints.
+- added _16b_LowPassFilter_AnalogRead_Control example
+- lots of typos
+
+
+Version 0.01.1e
+
+- added LowPass1stOrder.h, an alternative to Smooth which can handle long numbers.
+- fixed a bug in Smooth.h which stopped high smoothness values working properly.
+- added another example for Smooth, changing freqency.
+- fixed errors in fixedMath.h
+- fixed a naming problem in char2mozzi.py
+- added _02b_FMsynth example
+- added _03b_AMsynth example
+- added _05b_Smooth2 example
+- added _05c_LowPass1stOrder example
+
+
+Version 0.01.1d
+
+-utils.h: added startAnalogRead() and receiveAnalogRead(), so conversion can
+	happen in the background instead of hogging the cpu in Arduino's analogRead().
+- fixedMath.h: tweaks and additions
+
+
+Version 0.01.1c
+
+- Smooth.h: increased speed from about 400 us to between 1-5 us, depending on
+number type, by changing floating to fixed point in internal calculations. Types
+are now restricted to char, unsigned char, int and unsigned int.
+- fixedMath.h: changed *_float2fix names to float_to* , added some types and fixed some mistakes
+- utils.h:
+	-hardcoded midiToFreq[] array to progmem instead of generating on startup
+	-removed old Q16n16_mtof() and renamed Q16n16_mtofLookup() to Q16n16_mtof().
+	The old Q16n16_mtof() was slower and less accurate than the lookup version.
+- fixed example _08_Detuned_Beats_Wash to work with new midi, fixed-point and Oscil setFreq_Q16n16 code.
+
+
+Version 0.01.1b
+
+- Oscil.h:
+	- added a setPhase() method to play a table from any position.
+	- added setFreq_Q16n16() for setting frequency using Q16n16 fixed-point numbers
+- _09_PhaseMod_Envelope example wasn't showing up in Arduino, fixed the name so it can be found.
+- added triangle, saw and cos tables in sizes 256, 512, 1024, 2048, 4096 and 8192
+- added a float2mozzi_uint8.py, renamed the other wave converter scripts and made them more uniform
+- utils.h/utils.cpp:
+	- added Q16n16_mtofLookup(), a fast (but less accurate for non-integer midi note numbers) fixed point alternative to mtof().
+	- added Q16n16_mtof(), a faster (but less accurate overall) fixed point alternative to mtof().
+	- changed setupFastADC() to setupFastAnalogRead()
+- replaced TABLE_NUM_CELLS with NUM_CELLS in tables
+
+
+Version 0.01.1
+
+- Changed utils.c to utils.cpp and changed all examples from #include utils.c to #include utils.h.
+- Changed and capitalised names in saw_analogue512_int8.h
+- Removed some wavetables which were too short. (should make more 1024 & 2048 tables)
+- Oscil.h and Sample.h, added a constructor for declaring without a table, and a setTable() method, prompted by "konsumer' on mozzi-users

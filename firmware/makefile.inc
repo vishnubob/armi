@@ -4,6 +4,10 @@
 # Name of target controller 
 # (e.g. 'at90s8515', see the available avr-gcc mmcu 
 # options for possible values)
+AVRDUDE_PORT=$(PORT)
+ifeq ($(AVRDUDE_PORT),) 
+	AVRDUDE_PORT=/dev/tty.usbmodemfd441
+endif
 MCU=atmega328
 F_CPU=16000000
 
@@ -17,38 +21,38 @@ PROGRAMMER_MCU=m328p
 
 # Name of our project
 # (use a single word, e.g. 'myproject')
-PROJECTNAME=armi
 
-# Source files
-# List C/C++/Assembly source files:
-# (list all files to compile, e.g. 'a.c b.cpp as.S'):
-# Use .cc, .cpp or .C suffix for C++ files, use .S 
-# (NOT .s !!!) for assembly source code files.
-PRJSRC=arduino/CDC.cpp \
-arduino/HID.cpp \
-arduino/IPAddress.cpp \
-arduino/Print.cpp \
-arduino/Stream.cpp \
-arduino/Tone.cpp \
-arduino/USBCore.cpp \
-arduino/WInterrupts.c \
-arduino/WMath.cpp \
-arduino/WString.cpp \
-arduino/main.cpp \
-arduino/new.cpp \
-arduino/wiring.c \
-arduino/wiring_analog.c \
-arduino/wiring_digital.c \
-arduino/wiring_pulse.c \
-arduino/wiring_shift.c \
-arduino/EEPROM.c \
-arduino/HardwareSerial.cpp \
-ardumidi.cpp \
-armi.cpp
+MOZZI=../mozzi/Ead.cpp \
+../mozzi/LowPassFilter.cpp \
+../mozzi/MozziGuts.cpp \
+../mozzi/MozziTimer2.cpp \
+../mozzi/TimerOne.cpp \
+../mozzi/TimerZero.cpp \
+../mozzi/fastSqrt.cpp \
+../mozzi/fixedMath.cpp \
+../mozzi/utils.cpp
 
+ARDUINO=../arduino/CDC.cpp \
+../arduino/HID.cpp \
+../arduino/IPAddress.cpp \
+../arduino/Print.cpp \
+../arduino/Stream.cpp \
+../arduino/USBCore.cpp \
+../arduino/WInterrupts.c \
+../arduino/WMath.cpp \
+../arduino/WString.cpp \
+../arduino/main.cpp \
+../arduino/new.cpp \
+../arduino/wiring.c \
+../arduino/wiring_analog.c \
+../arduino/wiring_digital.c \
+../arduino/wiring_pulse.c \
+../arduino/wiring_shift.c \
+../arduino/EEPROM.c \
+../arduino/HardwareSerial.cpp
 
 # additional includes (e.g. -I/path/to/mydir)
-INC=-Iarduino -ICapSense
+INC=-I.. -I../arduino  -I../mozzi -I../mozzi/config
 
 # libraries to link in (e.g. -lmylib)
 LIBS=
@@ -78,7 +82,6 @@ AVRDUDE_PROGRAMMERID=avrispv2
 # hardware programmer is attached
 #
 #AVRDUDE_PORT=/dev/ttyACM0
-AVRDUDE_PORT=/dev/tty.usbmodem1d11
 
 
 ####################################################
@@ -101,6 +104,7 @@ HEXFORMAT=ihex
 CFLAGS=-I. $(INC) -g -mmcu=$(MCU) -O$(OPTLEVEL) \
 	-DF_CPU=$(F_CPU)						\
 	-DARDUINO=100    						\
+    -D__AVR_ATmega328P__                    \
 	-fpack-struct -fshort-enums             \
 	-funsigned-bitfields -funsigned-char    \
 	-Wall -Wstrict-prototypes               \
@@ -210,8 +214,7 @@ $(DUMPTRG): $(TRG)
 
 
 $(TRG): $(OBJDEPS) 
-	$(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS)
-
+	$(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS) -lm
 
 #### Generating assembly ####
 # asm from C
